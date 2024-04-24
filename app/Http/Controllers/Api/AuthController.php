@@ -33,9 +33,21 @@ class AuthController extends Controller
     {
         $credentials = request(['email', 'password']);
         if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['statusText' => 'Unauthorized'], 401);
         }
         return $this->respondWithToken($token);
+    }
+
+    public function register()
+    {
+        $user = new User(request()->all());
+        $user->save();
+        $user->refresh();
+        // return response()->json($user->toArray());
+        return response()->json([
+            'status' => 'Ok', 
+            "data" => $user->toArray()
+        ]);
     }
 
     /**
@@ -45,7 +57,11 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return response()->json(auth()->user());
+        // return response()->json(auth()->user());
+        return response()->json([
+            'status' => 'Ok', 
+            "data" => auth()->user()
+        ]);
     }
 
     /**
@@ -57,7 +73,10 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json([
+            'status' => 'Ok', 
+            "data" => null
+        ]);
     }
 
     /**
@@ -70,13 +89,6 @@ class AuthController extends Controller
         return $this->respondWithToken(auth()->refresh());
     }
 
-    public function register()
-    {
-        $user = new User(request()->all());
-        $user->save();
-        $user->refresh();
-        return response()->json($user->toArray());
-    }
     public function testRuoli()
     {
         $mex="";

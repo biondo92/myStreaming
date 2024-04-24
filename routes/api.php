@@ -11,10 +11,12 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::get('logout', [AuthController::class, 'logout']);
     Route::get('refresh', [AuthController::class, 'refresh']);
     Route::get('me', [AuthController::class, 'me']);
-    
 });
+
 Route::group(['middleware' => 'api', 'prefix' => 'categories'], function ($router) {
-    Route::post('/add', [CategoriesController::class, 'store']);
     Route::get('/', [CategoriesController::class, 'index']);
-    
+    Route::get('/{id}', [CategoriesController::class, 'show']);
+    Route::post('/add', [CategoriesController::class, 'store']);
+    Route::put('/{id}', [CategoriesController::class, 'update']);
+    Route::delete('/{id}', [CategoriesController::class, 'destroy']);   
 });

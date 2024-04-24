@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Gate::define("is_in_role", function (User $user,$required){
+        Gate::define("is_in_role", function (User $user, $required){
             $claims = $user->getJWTCustomClaims();
             return $claims["role"] == $required;
         });

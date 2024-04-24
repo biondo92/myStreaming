@@ -15,7 +15,8 @@ class CategoriesController extends Controller
      *
      * @return void
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth:api');
     }
     /**
@@ -24,7 +25,11 @@ class CategoriesController extends Controller
     public function index()
     {
         $categories = Category::with(['descriptions'])->get();
-        return response()->json($categories->toArray());
+        // return response()->json($categories->toArray());
+        return response()->json([
+            'status' => 'Ok', 
+            "data" => $categories
+        ]);
     }
 
     /**
@@ -32,30 +37,41 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        if(Gate::allows("is_in_role",1)){
-            $data=request()->input();
-           $cat=new Category();
-           $cat->save();
-           $cat->refresh();
-          
-           foreach($data["descriptions"] as $key=>$value){
-              $value["categoryId"]=$cat[0]["id"];
-              $desc=new CategoryDescription($value->toArray());
-              $desc->save();
-              
-              
-           }
-           $category = Category::with(['descriptions'])->where(['id'=>$cat[0]['id']])->first();
-           return response()->json($category->toArray());
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $data = request()->input();
+            $cat = new Category();
+            $cat->save();
+            $cat->refresh();
 
+            foreach ($data["descriptions"] as $value) {
+                $value["categoryId"] = $cat->id;
+                $desc = new CategoryDescription($value);
+                $desc->save();
+            }
 
-          }
-          elseif(Gate::allows("is_in_role",2)){
-            return response()->json(['error' => 'Forbidden'], 403);
-          }
-          else{
-            return response()->json(['error' => 'Unauthorized'], 401);
-          }
+            $category = Category::with(['descriptions'])->find($cat->id);
+            // return response()->json($category);
+            return response()->json([
+                'status' => 'Ok', 
+                "data" => $category
+            ]);
+        }
+        
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+
+        } 
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+
+        } 
+
+        return response()->json([
+            'status' => 'Forbidden', 
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -63,7 +79,12 @@ class CategoriesController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $category = Category::with(['descriptions'])->find($id);
+        // return response()->json($category);
+        return response()->json([
+            'status' => 'Ok', 
+            "data" => $category
+        ]);
     }
 
     /**
@@ -71,7 +92,37 @@ class CategoriesController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $data = request()->input();
+            $cat = Category::with(['descriptions'])->find($id);
+
+            foreach ($cat["descriptions"] as $key => $desc) {
+                $desc->update($data["descriptions"][$key]);
+            }
+
+            $category = Category::with(['descriptions'])->find($cat->id);
+            // return response()->json($category);
+            return response()->json([
+                'status' => 'Ok', 
+                "data" => $category
+            ]);
+        }
+        
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+
+        } 
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+
+        } 
+
+        return response()->json([
+            'status' => 'Forbidden', 
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -79,6 +130,15 @@ class CategoriesController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $res = CategoryDescription::where('categoryId',$id)->delete();
+        if ($res) {
+            $res = Category::where('id', $id)->delete();
+        }
+        if ($res) {
+            return response()->json([
+                'status' => 'No content', 
+                "data" => null
+            ], 204);
+        }
     }
 }
