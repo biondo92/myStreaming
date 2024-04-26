@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\CategoryDescription;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
-use App\Models\Category;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Gate;
 
-class CategoriesController extends Controller
+class SettingsController extends Controller
 {
     /**
      * Create a new AuthController instance.
@@ -24,10 +23,10 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        $categories = Category::with(['descriptions'])->get();
+        $settings = Setting::all();
         return response()->json([
             'status' => 'Ok', 
-            "data" => $categories
+            "data" => $settings
         ]);
     }
 
@@ -38,22 +37,14 @@ class CategoriesController extends Controller
     {
         // admin
         if (Gate::allows("is_in_role", 1)) {
-            $data = request()->input();
-            $cat = new Category();
-            $cat->save();
-            $cat->refresh();
+            $sett = new Setting(request()->all());
+            $sett->save();
+            $sett->refresh();
 
-            foreach ($data["descriptions"] as $value) {
-                $value["categoryId"] = $cat->id;
-                $desc = new CategoryDescription($value);
-                $desc->save();
-            }
-
-            $category = Category::with(['descriptions'])->find($cat->id);
-            // return response()->json($category);
+            $setting = Setting::find($sett->id);
             return response()->json([
                 'status' => 'Ok', 
-                "data" => $category
+                "data" => $setting
             ]);
         }
         
@@ -78,13 +69,14 @@ class CategoriesController extends Controller
      */
     public function show(string $id)
     {
-        $category = Category::with(['descriptions'])->find($id);
-        // return response()->json($category);
-        return response()->json([
-            'status' => 'Ok', 
-            "data" => $category
-        ]);
+        $setting = Setting::find($id);
+            return response()->json([
+                'status' => 'Ok', 
+                "data" => $setting
+            ]);
     }
+
+    
 
     /**
      * Update the specified resource in storage.
@@ -94,17 +86,16 @@ class CategoriesController extends Controller
         // admin
         if (Gate::allows("is_in_role", 1)) {
             $data = request()->input();
-            $cat = Category::with(['descriptions'])->find($id);
+            $sett = Setting::find($id);
 
-            foreach ($cat["descriptions"] as $key => $desc) {
-                $desc->update($data["descriptions"][$key]);
-            }
+            $sett->update($data);
+            $sett->save();
+            $sett->refresh();
 
-            $category = Category::with(['descriptions'])->find($cat->id);
-            // return response()->json($category);
+            
             return response()->json([
                 'status' => 'Ok', 
-                "data" => $category
+                "data" => $sett
             ]);
         }
         
@@ -129,10 +120,8 @@ class CategoriesController extends Controller
      */
     public function destroy(string $id)
     {
-        $res = CategoryDescription::where('categoryId',$id)->delete();
-        if ($res) {
-            $res = Category::where('id', $id)->delete();
-        }
+        $res = Setting::where('id', $id)->delete();
+        
         if ($res) {
             return response()->json([
                 'status' => 'No content', 

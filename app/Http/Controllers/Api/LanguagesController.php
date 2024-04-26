@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\CategoryDescription;
+use App\Models\Language;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
-use App\Models\Category;
 use Illuminate\Support\Facades\Gate;
 
-class CategoriesController extends Controller
+class LanguagesController extends Controller
 {
+
     /**
      * Create a new AuthController instance.
      *
@@ -24,10 +24,10 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        $categories = Category::with(['descriptions'])->get();
+        $languages = Language::all();
         return response()->json([
             'status' => 'Ok', 
-            "data" => $categories
+            "data" => $languages
         ]);
     }
 
@@ -38,22 +38,14 @@ class CategoriesController extends Controller
     {
         // admin
         if (Gate::allows("is_in_role", 1)) {
-            $data = request()->input();
-            $cat = new Category();
-            $cat->save();
-            $cat->refresh();
+            $lang = new Language(request()->all());
+            $lang->save();
+            $lang->refresh();
 
-            foreach ($data["descriptions"] as $value) {
-                $value["categoryId"] = $cat->id;
-                $desc = new CategoryDescription($value);
-                $desc->save();
-            }
-
-            $category = Category::with(['descriptions'])->find($cat->id);
-            // return response()->json($category);
+            $language = Language::find($lang->id);
             return response()->json([
                 'status' => 'Ok', 
-                "data" => $category
+                "data" => $language
             ]);
         }
         
@@ -78,12 +70,11 @@ class CategoriesController extends Controller
      */
     public function show(string $id)
     {
-        $category = Category::with(['descriptions'])->find($id);
-        // return response()->json($category);
-        return response()->json([
-            'status' => 'Ok', 
-            "data" => $category
-        ]);
+        $language = Language::find($id);
+            return response()->json([
+                'status' => 'Ok', 
+                "data" => $language
+            ]);
     }
 
     /**
@@ -94,17 +85,16 @@ class CategoriesController extends Controller
         // admin
         if (Gate::allows("is_in_role", 1)) {
             $data = request()->input();
-            $cat = Category::with(['descriptions'])->find($id);
+            $lang = Language::find($id);
 
-            foreach ($cat["descriptions"] as $key => $desc) {
-                $desc->update($data["descriptions"][$key]);
-            }
+            $lang->update($data);
+            $lang->save();
+            $lang->refresh();
 
-            $category = Category::with(['descriptions'])->find($cat->id);
-            // return response()->json($category);
+            
             return response()->json([
                 'status' => 'Ok', 
-                "data" => $category
+                "data" => $lang
             ]);
         }
         
@@ -129,10 +119,8 @@ class CategoriesController extends Controller
      */
     public function destroy(string $id)
     {
-        $res = CategoryDescription::where('categoryId',$id)->delete();
-        if ($res) {
-            $res = Category::where('id', $id)->delete();
-        }
+        $res = Language::where('id', $id)->delete();
+        
         if ($res) {
             return response()->json([
                 'status' => 'No content', 
