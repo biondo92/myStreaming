@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\Api\CategoriesController;
+use App\Http\Controllers\Api\FilmsController;
 use App\Http\Controllers\Api\LanguagesController;
 use App\Http\Controllers\Api\SettingsController;
+use App\Http\Controllers\Api\CitiesController;
+use App\Http\Controllers\Api\RolesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -37,4 +40,28 @@ Route::group(['middleware' => 'api', 'prefix' => 'settings'], function ($router)
     Route::post('/add', [SettingsController::class, 'store']);
     Route::put('/{id}', [SettingsController::class, 'update']);
     Route::delete('/{id}', [SettingsController::class, 'destroy']);   
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'cities'], function ($router) {
+    Route::get('/', [CitiesController::class, 'index']);
+    Route::get('/{id}', [CitiesController::class, 'show']);
+    Route::post('/add', [CitiesController::class, 'store']);
+    Route::put('/{id}', [CitiesController::class, 'update']);
+    Route::delete('/{id}', [CitiesController::class, 'destroy']);   
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'roles'], function ($router) {
+    Route::get('/', [RolesController::class, 'index']);
+    Route::get('/{id}', [RolesController::class, 'show']);
+    Route::post('/add', [RolesController::class, 'store']);
+    Route::put('/{id}', [RolesController::class, 'update']);
+    Route::delete('/{id}', [RolesController::class, 'destroy']);   
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'films'], function ($router) {
+    Route::get('/', [FilmsController::class, 'index']);
+    Route::get('/{id}', [FilmsController::class, 'show']);
+    Route::post('/add', [FilmsController::class, 'store']);
+    Route::put('/{id}', [FilmsController::class, 'update']);
+    Route::delete('/{id}', [FilmsController::class, 'destroy']);   
 });
