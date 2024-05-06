@@ -23,7 +23,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'categories'], function ($route
     Route::get('/{id}', [CategoriesController::class, 'show']);
     Route::post('/add', [CategoriesController::class, 'store']);
     Route::put('/{id}', [CategoriesController::class, 'update']);
-    Route::delete('/{id}', [CategoriesController::class, 'destroy']);   
+    Route::delete('/{id}', [CategoriesController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'languages'], function ($router) {
@@ -31,7 +31,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'languages'], function ($router
     Route::get('/{id}', [LanguagesController::class, 'show']);
     Route::post('/add', [LanguagesController::class, 'store']);
     Route::put('/{id}', [LanguagesController::class, 'update']);
-    Route::delete('/{id}', [LanguagesController::class, 'destroy']);   
+    Route::delete('/{id}', [LanguagesController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'settings'], function ($router) {
@@ -39,7 +39,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'settings'], function ($router)
     Route::get('/{id}', [SettingsController::class, 'show']);
     Route::post('/add', [SettingsController::class, 'store']);
     Route::put('/{id}', [SettingsController::class, 'update']);
-    Route::delete('/{id}', [SettingsController::class, 'destroy']);   
+    Route::delete('/{id}', [SettingsController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'cities'], function ($router) {
@@ -47,7 +47,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'cities'], function ($router) {
     Route::get('/{id}', [CitiesController::class, 'show']);
     Route::post('/add', [CitiesController::class, 'store']);
     Route::put('/{id}', [CitiesController::class, 'update']);
-    Route::delete('/{id}', [CitiesController::class, 'destroy']);   
+    Route::delete('/{id}', [CitiesController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'roles'], function ($router) {
@@ -55,7 +55,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'roles'], function ($router) {
     Route::get('/{id}', [RolesController::class, 'show']);
     Route::post('/add', [RolesController::class, 'store']);
     Route::put('/{id}', [RolesController::class, 'update']);
-    Route::delete('/{id}', [RolesController::class, 'destroy']);   
+    Route::delete('/{id}', [RolesController::class, 'destroy']);
 });
 
 Route::group(['middleware' => 'api', 'prefix' => 'films'], function ($router) {
@@ -63,5 +63,5 @@ Route::group(['middleware' => 'api', 'prefix' => 'films'], function ($router) {
     Route::get('/{id}', [FilmsController::class, 'show']);
     Route::post('/add', [FilmsController::class, 'store']);
     Route::put('/{id}', [FilmsController::class, 'update']);
-    Route::delete('/{id}', [FilmsController::class, 'destroy']);   
+    Route::delete('/{id}', [FilmsController::class, 'destroy']);
 });
