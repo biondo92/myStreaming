@@ -9,6 +9,9 @@ use App\Http\Controllers\Api\RolesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\EpisodesController;
+use App\Http\Controllers\Api\SeasonsController;
+use App\Http\Controllers\Api\SeriesController;
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('register', [AuthController::class, 'register']);
@@ -64,4 +67,28 @@ Route::group(['middleware' => 'api', 'prefix' => 'films'], function ($router) {
     Route::post('/add', [FilmsController::class, 'store']);
     Route::put('/{id}', [FilmsController::class, 'update']);
     Route::delete('/{id}', [FilmsController::class, 'destroy']);
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'series'], function ($router) {
+    Route::get('/', [SeriesController::class, 'index']);
+    Route::get('/{id}', [SeriesController::class, 'show']);
+    Route::post('/add', [SeriesController::class, 'store']);
+    Route::put('/{id}', [SeriesController::class, 'update']);
+    Route::delete('/{id}', [SeriesController::class, 'destroy']);
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'seasons'], function ($router) {
+    Route::get('/', [SeasonsController::class, 'index']);
+    Route::get('/{id}', [SeasonsController::class, 'show']);
+    Route::post('/add', [SeasonsController::class, 'store']);
+    Route::put('/{id}', [SeasonsController::class, 'update']);
+    Route::delete('/{id}', [SeasonsController::class, 'destroy']);
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'episodes'], function ($router) {
+    Route::get('/', [EpisodesController::class, 'index']);
+    Route::get('/{id}', [EpisodesController::class, 'show']);
+    Route::post('/add', [EpisodesController::class, 'store']);
+    Route::put('/{id}', [EpisodesController::class, 'update']);
+    Route::delete('/{id}', [EpisodesController::class, 'destroy']);
 });
