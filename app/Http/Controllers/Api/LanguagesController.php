@@ -24,11 +24,33 @@ class LanguagesController extends Controller
      */
     public function index()
     {
-        $languages = Language::all();
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $languages = Language::all();
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $languages
+            ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+            $languages = Language::all();
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $languages
+            ]);
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
         return response()->json([
-            'status' => 'Ok', 
-            "data" => $languages
-        ]);
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -44,23 +66,21 @@ class LanguagesController extends Controller
 
             $language = Language::find($lang->id);
             return response()->json([
-                'status' => 'Ok', 
+                'status' => 'Ok',
                 "data" => $language
             ]);
         }
-        
+
         // user
         if (Gate::allows("is_in_role", 2)) {
-
-        } 
+        }
 
         // guest
         if (Gate::allows("is_in_role", 3)) {
-
-        } 
+        }
 
         return response()->json([
-            'status' => 'Forbidden', 
+            'status' => 'Forbidden',
             "data" => null
         ], 403);
     }
@@ -70,11 +90,33 @@ class LanguagesController extends Controller
      */
     public function show(string $id)
     {
-        $language = Language::find($id);
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $language = Language::find($id);
             return response()->json([
-                'status' => 'Ok', 
+                'status' => 'Ok',
                 "data" => $language
             ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+            $language = Language::find($id);
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $language
+            ]);
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
+        return response()->json([
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -91,25 +133,23 @@ class LanguagesController extends Controller
             $lang->save();
             $lang->refresh();
 
-            
+
             return response()->json([
-                'status' => 'Ok', 
+                'status' => 'Ok',
                 "data" => $lang
             ]);
         }
-        
+
         // user
         if (Gate::allows("is_in_role", 2)) {
-
-        } 
+        }
 
         // guest
         if (Gate::allows("is_in_role", 3)) {
-
-        } 
+        }
 
         return response()->json([
-            'status' => 'Forbidden', 
+            'status' => 'Forbidden',
             "data" => null
         ], 403);
     }
@@ -119,13 +159,30 @@ class LanguagesController extends Controller
      */
     public function destroy(string $id)
     {
-        $res = Language::where('id', $id)->delete();
-        
-        if ($res) {
-            return response()->json([
-                'status' => 'No content', 
-                "data" => null
-            ], 204);
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $res = Language::where('id', $id)->delete();
+
+            if ($res) {
+                return response()->json([
+                    'status' => 'No content',
+                    "data" => null
+                ], 204);
+            }
         }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
+        return response()->json([
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 }

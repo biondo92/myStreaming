@@ -53,7 +53,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string("lastName")->nullable();
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('password');
             $table->unsignedBigInteger("roleId")->default(2);
             $table->unsignedBigInteger("languageId")->default(1);
@@ -61,6 +61,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken()->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('roleId')->references('id')->on('roles');
             $table->foreign('languageId')->references('id')->on('languages');

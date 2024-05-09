@@ -24,11 +24,34 @@ class SeriesController extends Controller
      */
     public function index()
     {
-        $serie = Serie::with(['category', 'seasons'])->get();
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+
+            $serie = Serie::with(['category', 'seasons'])->get();
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $serie
+            ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+
+            $serie = Serie::with(['category', 'seasons'])->get();
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $serie
+            ]);
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
         return response()->json([
-            'status' => 'Ok',
-            "data" => $serie
-        ]);
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -68,11 +91,33 @@ class SeriesController extends Controller
      */
     public function show(string $id)
     {
-        $serie = Serie::with(['category', 'seasons'])->find($id);
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $serie = Serie::with(['category', 'seasons'])->find($id);
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $serie
+            ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+            $serie = Serie::with(['category', 'seasons'])->find($id);
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $serie
+            ]);
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
         return response()->json([
-            'status' => 'Ok',
-            "data" => $serie
-        ]);
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -115,13 +160,30 @@ class SeriesController extends Controller
      */
     public function destroy(string $id)
     {
-        $res = Serie::where('id', $id)->delete();
 
-        if ($res) {
-            return response()->json([
-                'status' => 'No content',
-                "data" => null
-            ], 204);
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $res = Serie::where('id', $id)->delete();
+
+            if ($res) {
+                return response()->json([
+                    'status' => 'No content',
+                    "data" => null
+                ], 204);
+            }
         }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
+        return response()->json([
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AddressesController;
 use App\Http\Controllers\Api\CategoriesController;
 use App\Http\Controllers\Api\FilmsController;
 use App\Http\Controllers\Api\LanguagesController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\EpisodesController;
 use App\Http\Controllers\Api\SeasonsController;
 use App\Http\Controllers\Api\SeriesController;
+use App\Http\Controllers\Api\UsersController;
 
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('register', [AuthController::class, 'register']);
@@ -91,4 +93,20 @@ Route::group(['middleware' => 'api', 'prefix' => 'episodes'], function ($router)
     Route::post('/add', [EpisodesController::class, 'store']);
     Route::put('/{id}', [EpisodesController::class, 'update']);
     Route::delete('/{id}', [EpisodesController::class, 'destroy']);
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'addresses'], function ($router) {
+    Route::get('/', [AddressesController::class, 'index']);
+    Route::get('/{id}', [AddressesController::class, 'show']);
+    Route::post('/add', [AddressesController::class, 'store']);
+    Route::put('/{id}', [AddressesController::class, 'update']);
+    Route::delete('/{id}', [AddressesController::class, 'destroy']);
+});
+
+Route::group(['middleware' => 'api', 'prefix' => 'users'], function ($router) {
+    Route::get('/', [UsersController::class, 'index']);
+    Route::get('/{id}', [UsersController::class, 'show']);
+    Route::post('/add', [UsersController::class, 'store']);
+    Route::put('/{id}', [UsersController::class, 'update']);
+    Route::delete('/{id}', [UsersController::class, 'destroy']);
 });

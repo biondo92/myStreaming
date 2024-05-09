@@ -23,11 +23,33 @@ class EpisodesController extends Controller
      */
     public function index()
     {
-        $episode = Episode::with(['season'])->get();
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $episode = Episode::with(['season'])->get();
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $episode
+            ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+            $episode = Episode::with(['season'])->get();
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $episode
+            ]);
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
         return response()->json([
-            'status' => 'Ok',
-            "data" => $episode
-        ]);
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -67,11 +89,33 @@ class EpisodesController extends Controller
      */
     public function show(string $id)
     {
-        $episode = Episode::with(['season'])->find($id);
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $episode = Episode::with(['season'])->find($id);
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $episode
+            ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+            $episode = Episode::with(['season'])->find($id);
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $episode
+            ]);
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
         return response()->json([
-            'status' => 'Ok',
-            "data" => $episode
-        ]);
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -114,13 +158,30 @@ class EpisodesController extends Controller
      */
     public function destroy(string $id)
     {
-        $res = Episode::where('id', $id)->delete();
 
-        if ($res) {
-            return response()->json([
-                'status' => 'No content',
-                "data" => null
-            ], 204);
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $res = Episode::where('id', $id)->delete();
+
+            if ($res) {
+                return response()->json([
+                    'status' => 'No content',
+                    "data" => null
+                ], 204);
+            }
         }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
+        return response()->json([
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 }

@@ -23,11 +23,28 @@ class SettingsController extends Controller
      */
     public function index()
     {
-        $settings = Setting::all();
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $settings = Setting::all();
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $settings
+            ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
         return response()->json([
-            'status' => 'Ok', 
-            "data" => $settings
-        ]);
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -43,23 +60,21 @@ class SettingsController extends Controller
 
             $setting = Setting::find($sett->id);
             return response()->json([
-                'status' => 'Ok', 
+                'status' => 'Ok',
                 "data" => $setting
             ]);
         }
-        
+
         // user
         if (Gate::allows("is_in_role", 2)) {
-
-        } 
+        }
 
         // guest
         if (Gate::allows("is_in_role", 3)) {
-
-        } 
+        }
 
         return response()->json([
-            'status' => 'Forbidden', 
+            'status' => 'Forbidden',
             "data" => null
         ], 403);
     }
@@ -69,14 +84,31 @@ class SettingsController extends Controller
      */
     public function show(string $id)
     {
-        $setting = Setting::find($id);
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $setting = Setting::find($id);
             return response()->json([
-                'status' => 'Ok', 
+                'status' => 'Ok',
                 "data" => $setting
             ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
+        return response()->json([
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
-    
+
 
     /**
      * Update the specified resource in storage.
@@ -92,25 +124,23 @@ class SettingsController extends Controller
             $sett->save();
             $sett->refresh();
 
-            
+
             return response()->json([
-                'status' => 'Ok', 
+                'status' => 'Ok',
                 "data" => $sett
             ]);
         }
-        
+
         // user
         if (Gate::allows("is_in_role", 2)) {
-
-        } 
+        }
 
         // guest
         if (Gate::allows("is_in_role", 3)) {
-
-        } 
+        }
 
         return response()->json([
-            'status' => 'Forbidden', 
+            'status' => 'Forbidden',
             "data" => null
         ], 403);
     }
@@ -120,13 +150,30 @@ class SettingsController extends Controller
      */
     public function destroy(string $id)
     {
-        $res = Setting::where('id', $id)->delete();
-        
-        if ($res) {
-            return response()->json([
-                'status' => 'No content', 
-                "data" => null
-            ], 204);
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $res = Setting::where('id', $id)->delete();
+
+            if ($res) {
+                return response()->json([
+                    'status' => 'No content',
+                    "data" => null
+                ], 204);
+            }
         }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
+        return response()->json([
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 }

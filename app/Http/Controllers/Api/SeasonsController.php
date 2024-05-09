@@ -23,11 +23,33 @@ class SeasonsController extends Controller
      */
     public function index()
     {
-        $season = Season::with(['serie', 'episodes'])->get();
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $season = Season::with(['serie', 'episodes'])->get();
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $season
+            ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+            $season = Season::with(['serie', 'episodes'])->get();
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $season
+            ]);
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
         return response()->json([
-            'status' => 'Ok',
-            "data" => $season
-        ]);
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -67,11 +89,34 @@ class SeasonsController extends Controller
      */
     public function show(string $id)
     {
-        $season = Season::with(['serie', 'episodes'])->find($id);
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+
+            $season = Season::with(['serie', 'episodes'])->find($id);
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $season
+            ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+
+            $season = Season::with(['serie', 'episodes'])->find($id);
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $season
+            ]);
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
         return response()->json([
-            'status' => 'Ok',
-            "data" => $season
-        ]);
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -114,13 +159,30 @@ class SeasonsController extends Controller
      */
     public function destroy(string $id)
     {
-        $res = Season::where('id', $id)->delete();
 
-        if ($res) {
-            return response()->json([
-                'status' => 'No content',
-                "data" => null
-            ], 204);
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $res = Season::where('id', $id)->delete();
+
+            if ($res) {
+                return response()->json([
+                    'status' => 'No content',
+                    "data" => null
+                ], 204);
+            }
         }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
+        return response()->json([
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 }

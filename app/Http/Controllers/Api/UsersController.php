@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Address;
+use App\Models\User;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
-use App\Models\Film;
 use Illuminate\Support\Facades\Gate;
 
-class FilmsController extends Controller
+class UsersController extends Controller
 {
     /**
      * Create a new AuthController instance.
@@ -23,33 +24,29 @@ class FilmsController extends Controller
      */
     public function index()
     {
-
-        // admin
         if (Gate::allows("is_in_role", 1)) {
-            $films = Film::with(['category'])->get();
+
+            $users = User::with(['role', 'addresses'])->get();
             return response()->json([
                 'status' => 'Ok',
-                "data" => $films
+                "data" => $users
             ]);
         }
 
         // user
         if (Gate::allows("is_in_role", 2)) {
-            $films = Film::with(['category'])->get();
-            return response()->json([
-                'status' => 'Ok',
-                "data" => $films
-            ]);
         }
 
         // guest
         if (Gate::allows("is_in_role", 3)) {
         }
-
-        return response()->json([
-            'status' => 'Forbidden',
-            "data" => null
-        ], 403);
+        return response()->json(
+            [
+                'status' => 'Forbidden',
+                "data" => null
+            ],
+            403
+        );
     }
 
     /**
@@ -59,14 +56,17 @@ class FilmsController extends Controller
     {
         // admin
         if (Gate::allows("is_in_role", 1)) {
-            $fil = new Film(request()->all());
-            $fil->save();
-            $fil->refresh();
+            $data = request()->input();
+            $rol = new User($data);
+            $rol->save();
+            $rol->refresh();
 
-            $film = Film::find($fil->id);
+
+            $use = User::with(['role', 'addresses'])->find($rol->id);
+            // return response()->json($category);
             return response()->json([
                 'status' => 'Ok',
-                "data" => $film
+                "data" => $use
             ]);
         }
 
@@ -89,22 +89,23 @@ class FilmsController extends Controller
      */
     public function show(string $id)
     {
-
         // admin
         if (Gate::allows("is_in_role", 1)) {
-            $film = Film::with(['category'])->find($id);
+            $users =  User::with(['role', 'addresses'])->find($id);
             return response()->json([
                 'status' => 'Ok',
-                "data" => $film
+                "data" => $users
             ]);
         }
-
+        $use =
+            User::with(['role', 'addresses'])->find($id);
         // user
-        if (Gate::allows("is_in_role", 2)) {
-            $film = Film::with(['category'])->find($id);
+        if (Gate::allows("is_in_role", 2) && Gate::allows("owner", $use["id"])) {
+
+
             return response()->json([
                 'status' => 'Ok',
-                "data" => $film
+                "data" => $use
             ]);
         }
 
@@ -123,24 +124,33 @@ class FilmsController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $data = request()->input();
         // admin
         if (Gate::allows("is_in_role", 1)) {
-            $data = request()->input();
-            $fil = Film::find($id);
 
-            $fil->update($data);
-            $fil->save();
-            $fil->refresh();
+            $use = User::find($id);
 
-
+            $use->update($data);
+            $use->save();
+            $users = User::with(['role', 'addresses'])->find($id);
             return response()->json([
                 'status' => 'Ok',
-                "data" => $fil
+                "data" => $users
             ]);
         }
 
         // user
-        if (Gate::allows("is_in_role", 2)) {
+        if (Gate::allows("is_in_role", 2) && Gate::allows("owner", $id)) {
+
+            $use = User::find($id);
+
+            $use->update($data);
+            $use->save();
+            $users = User::with(['role', 'addresses'])->find($id);
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $users
+            ]);
         }
 
         // guest
@@ -158,11 +168,12 @@ class FilmsController extends Controller
      */
     public function destroy(string $id)
     {
-
         // admin
         if (Gate::allows("is_in_role", 1)) {
-            $res = Film::where('id', $id)->delete();
-
+            $res = Address::where('userId', $id)->delete();
+            if ($res) {
+                $res = User::where('id', $id)->delete();
+            }
             if ($res) {
                 return response()->json([
                     'status' => 'No content',

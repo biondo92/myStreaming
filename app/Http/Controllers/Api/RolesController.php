@@ -25,11 +25,28 @@ class RolesController extends Controller
      */
     public function index()
     {
-        $roles = Role::with(['descriptions'])->get();
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+
+            $roles = Role::with(['descriptions'])->get();
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $roles
+            ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
         return response()->json([
-            'status' => 'Ok', 
-            "data" => $roles
-        ]);
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -53,23 +70,21 @@ class RolesController extends Controller
             $role = Role::with(['descriptions'])->find($rol->id);
             // return response()->json($category);
             return response()->json([
-                'status' => 'Ok', 
+                'status' => 'Ok',
                 "data" => $role
             ]);
         }
-        
+
         // user
         if (Gate::allows("is_in_role", 2)) {
-
-        } 
+        }
 
         // guest
         if (Gate::allows("is_in_role", 3)) {
-
-        } 
+        }
 
         return response()->json([
-            'status' => 'Forbidden', 
+            'status' => 'Forbidden',
             "data" => null
         ], 403);
     }
@@ -79,12 +94,29 @@ class RolesController extends Controller
      */
     public function show(string $id)
     {
-        $role = Role::with(['descriptions'])->find($id);
-        // return response()->json($role);
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $role = Role::with(['descriptions'])->find($id);
+            // return response()->json($role);
+            return response()->json([
+                'status' => 'Ok',
+                "data" => $role
+            ]);
+        }
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
+        }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
         return response()->json([
-            'status' => 'Ok', 
-            "data" => $role
-        ]);
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 
     /**
@@ -104,23 +136,21 @@ class RolesController extends Controller
             $role = Role::with(['descriptions'])->find($role->id);
             // return response()->json($role);
             return response()->json([
-                'status' => 'Ok', 
+                'status' => 'Ok',
                 "data" => $role
             ]);
         }
-        
+
         // user
         if (Gate::allows("is_in_role", 2)) {
-
-        } 
+        }
 
         // guest
         if (Gate::allows("is_in_role", 3)) {
-
-        } 
+        }
 
         return response()->json([
-            'status' => 'Forbidden', 
+            'status' => 'Forbidden',
             "data" => null
         ], 403);
     }
@@ -130,15 +160,32 @@ class RolesController extends Controller
      */
     public function destroy(string $id)
     {
-        $res = RoleDescription::where('roleId',$id)->delete();
-        if ($res) {
-            $res = Role::where('id', $id)->delete();
+
+        // admin
+        if (Gate::allows("is_in_role", 1)) {
+            $res = RoleDescription::where('roleId', $id)->delete();
+            if ($res) {
+                $res = Role::where('id', $id)->delete();
+            }
+            if ($res) {
+                return response()->json([
+                    'status' => 'No content',
+                    "data" => null
+                ], 204);
+            }
         }
-        if ($res) {
-            return response()->json([
-                'status' => 'No content', 
-                "data" => null
-            ], 204);
+
+        // user
+        if (Gate::allows("is_in_role", 2)) {
         }
+
+        // guest
+        if (Gate::allows("is_in_role", 3)) {
+        }
+
+        return response()->json([
+            'status' => 'Forbidden',
+            "data" => null
+        ], 403);
     }
 }
